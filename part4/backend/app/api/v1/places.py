@@ -78,7 +78,7 @@ class PlaceList(Resource):
 
         try:
             new_place = facade.create_place(place_data)
-        except IntegrityError:
+        except IntegrityError as error:
             return {"error": str(error)}, 404
         except (TypeError, ValueError) as error:
             return {"error": str(error)}, 400
