@@ -1,9 +1,8 @@
 const Home = () => {
   return (
     <>
-      <title>Mi página</title>
-      <meta name="description" content="Descripción de la página" />
-      <meta property="og:title" content="Mi página" />
+      <title>HBnB | Home</title>
+      <meta property="og:title" content="HBnB | Home" />
       <h1>Welcome</h1>
     </>
   );
