@@ -1,100 +1,121 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { loginUser, setAuthCookie } from '../services/auth';
+import { toast } from 'react-toastify';
+
+import * as Yup from 'yup';
 import logo from '../assets/logo.png';
-import loginimg from '../assets/login-img.png';
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [stayLoggedIn, setStayLoggedIn] = useState(false);
+  const credentials = { email, password };
 
-  const handleSubmit = e => {
+  const loginSchema = Yup.object().shape({
+    email: Yup.string()
+      .email('Invalid Email format')
+      .required('Email is required'),
+
+    password: Yup.string().required('Password is required'),
+  });
+
+  const handleSubmit = async e => {
     e.preventDefault();
+    try {
+      await loginSchema.validate(credentials, { abortEarly: false });
 
-    console.log('Login data:', { email, password });
+      const res = await loginUser(credentials);
+      if (res.access_token) {
+        setAuthCookie(res.access_token, stayLoggedIn);
+        setEmail('');
+        setPassword('');
+        toast.success('Login successful!');
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
+      }
+    } catch (err) {
+      if (err.inner) {
+        const messages = err.inner.map(e => e.message).join('\n');
+        alert(messages);
+      } else {
+        alert(err.message);
+      }
+    }
   };
 
-  useEffect(() => {
-    document.body.classList.add('login-page');
-    return () => {
-      document.body.classList.remove('login-page');
-    };
-  }, []);
-
   return (
-    <div className="container-fluid min-vh-100 d-flex justify-content-center align-items-center">
-      <div
-        className="row shadow-lg rounded-5 overflow-hidden transparent w-100"
-        style={{ maxWidth: '1000px' }}
-      >
-        <div className="col-md-5 p-5">
-          <div className="mb-4 fw-bold fs-5">
-            <img src={logo} className="img-fluid w-50" alt="Logo" />
-          </div>
-          <p className="text-muted mb-2">Welcome back !!!</p>
-          <h2 className="fw-bold mb-4">Log In</h2>
-
-          <form className="ps-1" onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">
-                Email
-              </label>
-              <input
-                type="email"
-                className="form-control bg-light"
-                id="email"
-                placeholder="login@gmail.com"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-              />
-            </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor="password"
-                className="form-label d-flex justify-content-between"
-              >
-                Password
-                <a href="#" className="text-decoration-none text-primary small">
-                  Forgot Password?
-                </a>
-              </label>
-              <input
-                type="password"
-                className="form-control bg-light"
-                id="password"
-                placeholder="********"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-              />
-            </div>
-            <div className="d-flex align-items-center">
-              <button type="submit" className="btn btn-pink w-20 mb-3">
-                LOGIN ➜
-              </button>
-            </div>
-          </form>
-
-          <p className="text-center text-muted small">
-            Don't have an account yet?{' '}
-            <a href="#" className="text-decoration-none text-pink">
-              Sign up for free
-            </a>
-          </p>
-        </div>
-
-        <div className="col-md-7 position-relative d-none d-md-block p-0">
-          <img
-            src={loginimg}
-            className="position-absolute top-50 start-50 translate-middle"
-            style={{ maxHeight: '500px', zIndex: 2 }}
-            alt="Login illustration"
-          />
-
-          <div className="row h-100 m-0">
-            <div className="col-md-5"></div>
-            <div className="col-md-7 transparent2 rounded-start-5"></div>
-          </div>
-        </div>
+    <div className="col-md-5 p-5">
+      <div className="mb-4 fw-bold fs-5">
+        <img src={logo} className="img-fluid w-50" alt="Logo" />
       </div>
+      <p className="text-muted mb-2">Welcome back !!!</p>
+      <h2 className="fw-bold mb-4">Log In</h2>
+
+      <form className="ps-1" onSubmit={handleSubmit} noValidate>
+        <div className="mb-3">
+          <label htmlFor="email" className="form-label">
+            Email
+          </label>
+          <input
+            type="email"
+            className="form-control bg-light"
+            id="email"
+            placeholder="login@gmail.com"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+          />
+        </div>
+
+        <div className="mb-2">
+          <label
+            htmlFor="password"
+            className="form-label d-flex justify-content-between"
+          >
+            Password
+            <a href="#" className="text-decoration-none text-primary small">
+              Forgot Password?
+            </a>
+          </label>
+          <input
+            type="password"
+            className="form-control bg-light"
+            id="password"
+            placeholder="********"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+          />
+        </div>
+        <div className="form-check mb-3">
+          <input
+            type="checkbox"
+            className="form-check-input"
+            id="stayLoggedIn"
+            checked={stayLoggedIn}
+            onChange={e => setStayLoggedIn(e.target.checked)}
+          />
+          <label
+            htmlFor="stayLoggedIn"
+            className="form-check-label text-muted small"
+          >
+            Stay logged in
+          </label>
+        </div>
+        <div className="d-flex justify-content-center">
+          <button type="submit" className="btn btn-primary w-20 mb-4">
+            LOGIN ➜
+          </button>
+        </div>
+      </form>
+
+      <p className="text-center text-muted small">
+        Don't have an account yet?{' '}
+        <a href="#" className="text-decoration-none text-pink">
+          Sign up for free
+        </a>
+      </p>
     </div>
   );
 };
