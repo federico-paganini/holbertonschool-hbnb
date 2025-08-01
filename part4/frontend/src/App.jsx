@@ -9,6 +9,7 @@ import AuthLayout from './layouts/AuthLayout';
 
 import Home from './pages/Index';
 import SignInUp from './pages/SignInUp';
+import PlaceDetails from './pages/PlaceDetails';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/places/:id" element={<PlaceDetails />} />
         </Route>
 
         <Route element={<AuthLayout />}>
