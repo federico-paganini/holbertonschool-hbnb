@@ -1,6 +1,8 @@
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, setAuthCookie } from '../services/auth';
+import { loginUser } from '../services/auth';
 import { toast } from 'react-toastify';
 
 import * as Yup from 'yup';
@@ -12,6 +14,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState('');
   const [stayLoggedIn, setStayLoggedIn] = useState(false);
   const credentials = { email, password };
+  const { login } = useContext(AuthContext);
 
   const loginSchema = Yup.object().shape({
     email: Yup.string()
@@ -28,7 +31,7 @@ const LoginForm = () => {
 
       const res = await loginUser(credentials);
       if (res.access_token) {
-        setAuthCookie(res.access_token, stayLoggedIn);
+        login(res.access_token, stayLoggedIn);
         setEmail('');
         setPassword('');
         toast.success('Login successful!');

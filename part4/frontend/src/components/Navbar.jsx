@@ -1,10 +1,12 @@
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 import { useLocation, Link } from 'react-router-dom';
 import UserDropdown from './UserDropdown';
 import logo from '../assets/logo.png';
 
-const Navbar = (/*{ user, onLogout }*/) => {
+const Navbar = () => {
   const location = useLocation();
-  const user = null;
+  const { user } = useContext(AuthContext);
 
   return (
     <header>
@@ -70,15 +72,15 @@ const Navbar = (/*{ user, onLogout }*/) => {
               {!user ? (
                 <li className="nav-item">
                   <Link
-                    className={`nav-link fs-5 ${location.pathname === '/login' ? 'active' : ''}`}
+                    className={`nav-link fs-5 ${location.pathname === '/signin-up' ? 'active' : ''}`}
                     aria-current="page"
-                    to="/login"
+                    to="/signin-up"
                   >
-                    <i className="bi bi-box-arrow-right"></i> Login
+                    <i className="bi bi-box-arrow-right"></i> Sign In
                   </Link>
                 </li>
               ) : (
-                <UserDropdown user={user} />
+                <UserDropdown />
               )}
             </ul>
           </div>
