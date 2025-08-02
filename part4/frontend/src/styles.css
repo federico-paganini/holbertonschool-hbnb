@@ -151,3 +151,9 @@ body.login-page {
   border: 1px solid #ddd;
   border-radius: 10px;
 }
+
+.user-icon {
+  transform: scale(1.5);
+  color: #2c2c2c;
+  text-shadow: #001aff 0px 0px 5px;
+}
